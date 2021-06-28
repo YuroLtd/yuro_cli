@@ -18,7 +18,8 @@ abstract class YamlUtil {
         var yamlMap = loadYaml(lockFile.readAsStringSync()) as YamlMap;
         return yamlMap['packages']['yuro_cli']['version'].toString();
       } else {
-        logger.e('Yuo can use command "pub global activate yuro_cli" or "flutter pub global activate yuro_cli" to get this cli.');
+        logger.e(
+            'Yuo can use command "pub global activate yuro_cli" or "flutter pub global activate yuro_cli" to get this cli.');
         return null;
       }
     } else {
@@ -74,27 +75,33 @@ abstract class YamlUtil {
     var yamlFile = File(join(PROJECT_PATH!, 'pubspec.yaml'));
     var yamlFileContent = yamlFile.readAsLinesSync();
     var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+    // 判断是否包含dev_dependencies,如果没有注册到dependencies或者dependency_overrides的后面
     if (!yamlMap.containsKey('dev_dependencies')) {
-      yamlFile.writeAsStringSync('\n\rdev_dependencies:', mode: FileMode.append, flush: true);
-      yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+      logger.i('Register "dev_dependencies" in pubspec.yaml.\n');
+      var devDependenciesInsertLine = _findDependencyLastLine('dependency_overrides', yamlMap, yamlFileContent);
+      if (devDependenciesInsertLine == -1) {
+        devDependenciesInsertLine = _findDependencyLastLine('dependencies', yamlMap, yamlFileContent);
+      }
+      if (devDependenciesInsertLine == -1) {
+        logger.e('Cannot find "dependency" or "dependency_overrides" in the pubspec.yaml file');
+        return false;
+      }
+      yamlFileContent.insert(++devDependenciesInsertLine, '\rdev_dependencies:');
+      var writeResult = await _writeYamlFile(yamlFile, yamlFileContent);
+      if (writeResult) {
+        yamlFileContent = yamlFile.readAsLinesSync();
+        yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+      }
     }
     var devDependencies = yamlMap['dev_dependencies'] as YamlMap?;
     if (devDependencies == null || !devDependencies.containsKey('build_runner')) {
-      logger.e('\nRegister "builder_runner" in "pubspec.yaml".');
+      logger.i('Register "builder_runner" in pubspec.yaml.\n');
       var version = await PubUtil.getRemoteVersion('build_runner');
       if (version != null) {
-        var insertLine = yamlFileContent.length;
-        if (devDependencies == null) {
-          insertLine = yamlFileContent.indexOf('dev_dependencies:');
-        } else {
-          var lastKey = devDependencies.keys.last;
-          insertLine = (devDependencies.nodes[lastKey] as YamlScalar).span.end.line;
-        }
+        var insertLine = _findDependencyLastLine('dev_dependencies', yamlMap, yamlFileContent);
         yamlFileContent.insert(++insertLine, '  build_runner: ^$version');
         var writeResult = await _writeYamlFile(yamlFile, yamlFileContent);
-        if (writeResult) {
-          await runFlutterPubGet();
-        }
+        if (writeResult) await runFlutterPubGet();
         return writeResult;
       } else {
         logger.e('Failed to get the latest version of "builder_runner", please try again.');
@@ -102,6 +109,22 @@ abstract class YamlUtil {
       }
     }
     return true;
+  }
+
+  static int _findDependencyLastLine(String dependencyName, YamlMap rootMap, List<String> yamlFileContent) {
+    var dependency = rootMap[dependencyName] as YamlMap?;
+    if (dependency != null) {
+      var yamlNode = dependency.nodes[dependency.keys.last];
+      if (yamlNode is YamlScalar) {
+        return yamlNode.span.end.line;
+      } else if (yamlNode is YamlMap) {
+        var lastNode = yamlNode.nodes[yamlNode.keys.last];
+        return (lastNode as YamlScalar).span.end.line;
+      }
+    } else {
+      return yamlFileContent.indexOf('$dependencyName:');
+    }
+    return -1;
   }
 
   static Future<bool> _writeYamlFile(File yamlFile, List<String> content) async {
