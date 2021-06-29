@@ -25,7 +25,7 @@ class GenerateLocales extends Command {
     String output = argResults['output'];
     String name = argResults['name'];
 
-    logger.i('\ngenerate images...');
+    logger.i('\ngenerate locales...');
     var result = await generateLocales(watch, output, name);
     if (result) {
       result = await YamlUtil.registerAssets('$path/');
