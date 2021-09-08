@@ -3,7 +3,7 @@ import 'package:yuro_cli/core/core.dart';
 
 class BuildRunner extends Command {
   @override
-  String get name => 'runner';
+  String get name => 'build_runner';
 
   @override
   String get help => 'execute cmd "flutter packages pub run build_runner build"';

@@ -1,6 +1,6 @@
 import 'package:args/args.dart';
 
-export 'impl/builder/builder.dart';
+export 'impl/run/run.dart';
 export 'impl/generate/generate.dart';
 
 export 'impl/upgrade.dart';

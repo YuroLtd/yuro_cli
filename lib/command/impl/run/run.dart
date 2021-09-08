@@ -1,22 +1,22 @@
 import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
-import 'builder_runner.dart';
+import 'build_runner.dart';
 
-class Builder extends Command {
+class Run extends Command {
   final _commands = [BuildRunner()];
 
   @override
-  String get name => 'build';
+  String get name => 'run';
 
   @override
-  String get help => 'build project.';
+  String get help => ' Run an executable from a package';
 
   @override
   ArgParser get argParser {
     var argParser = ArgParser();
-    argParser.addSeparator('Usage: yuro builder <command>');
-    var sb = StringBuffer()..writeln('Available commands:');
+    argParser.addSeparator('Usage: yuro run <package>');
+    var sb = StringBuffer()..writeln('Available packages:');
     _commands.forEach((element) {
       sb.write(element.name);
       sb.write(' ' * (15 - element.name.length));

@@ -3,7 +3,7 @@ import 'package:yuro_cli/core/core.dart';
 
 final ArgParser _argParser = ArgParser();
 
-final List<Command> _commands = [Builder(), Generate(), Version(), Upgrade()];
+final List<Command> _commands = [Run(), Generate(), Version(), Upgrade()];
 
 void inject() {
   _argParser.addSeparator('Usage: yuro <command> [arguments]');

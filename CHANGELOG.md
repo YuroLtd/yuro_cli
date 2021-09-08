@@ -1,3 +1,7 @@
+## 0.3.3
+
+* 替换命令`yuro build runner`为`yuro run build_runner`.
+
 ## 0.3.2
 
 * 修复命令`yuro build runner`在向`pubspec.yaml`文件注册时的bug.
