@@ -13,14 +13,14 @@ class Upgrade extends Command {
 
   @override
   Future<void> parser(List<String> arguments) async {
-    var remoteVersion = await PubUtil.getRemoteVersion('yuro_cli');
-    var nativeVersion = await YamlUtil.getNativeVersion();
+    final remoteVersion = await getRemoteVersion('yuro_cli');
+    final nativeVersion = await getNativeVersion();
 
     if (remoteVersion == null || nativeVersion == null || nativeVersion.compareTo(remoteVersion) >= 0) {
       logger.i('\nThe latest version is already installed.\n');
     } else {
       logger.i('\nThe current version is $nativeVersion and the latest version is $remoteVersion. upgrade...\n');
-      PubUtil.runUpgrade();
+      runUpgrade();
     }
   }
 }

@@ -8,16 +8,16 @@ class Generate extends Command {
   final _commands = [GenerateImages(), GenerateLocales()];
 
   @override
-  String get name => 'generate';
+  String get name => 'gen';
 
   @override
   String get help => 'Generate assets resource.';
 
   @override
   ArgParser get argParser {
-    var argParser = ArgParser();
+    final argParser = ArgParser();
     argParser.addSeparator('Usage: yuro generate <command>');
-    var sb = StringBuffer()..writeln('Available commands:');
+    final sb = StringBuffer()..writeln('Available commands:');
     _commands.forEach((element) {
       sb.write(element.name);
       sb.write(' ' * (15 - element.name.length));
@@ -32,10 +32,10 @@ class Generate extends Command {
   Future<void> parser(List<String> arguments) async {
     if (arguments.isNotEmpty) {
       if (argParser.commands.containsKey(arguments[0])) {
-        var command = _commands.where((element) => element.name == arguments[0]).first;
+        final command = _commands.where((element) => element.name == arguments[0]).first;
         await command.parser(arguments.sublist(1));
       } else {
-        throw ArgumentError('Could not find a command named "${arguments[0]}".');
+        logger.e('Could not find a command named "${arguments[0]}".');
       }
     } else {
       stdout.writeln(argParser.usage);

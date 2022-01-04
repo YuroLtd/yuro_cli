@@ -1,3 +1,9 @@
+## 0.4.0
+
+* 优化`yuro gen`命令的生成内容.
+* 替换命令`yuro gen images`为`yuro gen image`.
+* 替换命令`yuro gen locales`为`yuro gen locale`.
+
 ## 0.3.3
 
 * 替换命令`yuro build runner`为`yuro run build_runner`.

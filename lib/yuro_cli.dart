@@ -7,7 +7,7 @@ final List<Command> _commands = [Run(), Generate(), Version(), Upgrade()];
 
 void inject() {
   _argParser.addSeparator('Usage: yuro <command> [arguments]');
-  var sb = StringBuffer()..writeln('Available commands:');
+  final sb = StringBuffer()..writeln('Available commands:');
   _commands.forEach((element) {
     sb.write(element.name);
     sb.write(' ' * (15 - element.name.length));
@@ -20,7 +20,7 @@ void inject() {
 void parseArgs(List<String> arguments) async {
   if (arguments.isNotEmpty) {
     if (_argParser.commands.containsKey(arguments[0])) {
-      var command = _commands.where((element) => element.name == arguments[0]).first;
+      final command = _commands.where((element) => element.name == arguments[0]).first;
       await command.parser(arguments.sublist(1));
     } else {
       logger.e('Could not find a command named "${arguments[0]}".');

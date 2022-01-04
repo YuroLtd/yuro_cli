@@ -9,17 +9,26 @@ class BuildRunner extends Command {
   String get help => 'execute cmd "flutter packages pub run build_runner build"';
 
   @override
-  ArgParser get argParser =>
-      ArgParser()..addFlag('delete', abbr: 'd', help: 'The command contains --delete-conflicting-outputs.', defaultsTo: false);
+  ArgParser get argParser => ArgParser()
+    ..addFlag('delete', abbr: 'd', help: 'The command contains --delete-conflicting-outputs.', defaultsTo: false);
 
   @override
   Future<void> parser(List<String> arguments) async {
-    var argResults = argParser.parse(arguments);
+    final argResults = argParser.parse(arguments);
     bool delete = argResults['delete'];
-    var checkResult = await YamlUtil.checkBuilderRunner();
-    if (checkResult) {
-      await YamlUtil.runBuilderRunner(delete);
-    }
+    final checkResult = await checkPackageRegister(name, PackagePosition.devDependencies);
+    if (checkResult) await _runBuilderRunner(delete);
     logger.i('Process finished.\n');
+  }
+
+  /// 执行"flutter packages pub run build_runner build"命令,当[delete]为true时,增加参数
+  /// "--delete-conflicting-outputs"
+  Future<void> _runBuilderRunner(bool delete) async {
+    final arguments = ['pub', 'run', 'build_runner', 'build'];
+    if (delete) arguments.add('--delete-conflicting-outputs');
+    final res = await runExecutableArguments('flutter', arguments, verbose: true);
+    if (res.exitCode != 0) {
+      logger.e('\nError: ${res.stderr}');
+    }
   }
 }

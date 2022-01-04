@@ -1,13 +1,15 @@
 import 'dart:convert';
+import 'package:path/path.dart' as path;
+import 'package:dart_style/dart_style.dart';
 
 import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
 class GenerateLocales extends Command {
-  final path = 'assets/locales';
+  final _path = 'assets${path.separator}locales';
 
   @override
-  String get name => 'locales';
+  String get name => 'locale';
 
   @override
   String get help => 'Generate assets/locales resource.';
@@ -15,104 +17,100 @@ class GenerateLocales extends Command {
   @override
   ArgParser get argParser => ArgParser()
     ..addFlag('watch', abbr: 'w', help: 'Whether to listen the changes in assets.', defaultsTo: true)
-    ..addOption('output', abbr: 'o', help: 'Default output directory.', defaultsTo: 'generated')
-    ..addOption('name', abbr: 'n', help: 'The Assets Class Name.', defaultsTo: 'LocaleKeys');
+    ..addOption('output', abbr: 'o', help: 'Default output directory.', defaultsTo: 'generated');
 
   @override
   Future<void> parser(List<String> arguments) async {
-    var argResults = argParser.parse(arguments);
-    bool watch = argResults['watch'];
-    String output = argResults['output'];
-    String name = argResults['name'];
+    final argResults = argParser.parse(arguments);
+    final watch = argResults['watch'];
+    final output = argResults['output'];
 
-    logger.i('\ngenerate locales...');
-    var result = await generateLocales(watch, output, name);
-    if (result) {
-      result = await YamlUtil.registerAssets('$path/');
-    }
-    if (result) {
-      await YamlUtil.runFlutterPubGet();
-    }
-    logger.i('Process finished.\n');
+    logger.i('generate locales...');
+    // 生成Local文件
+    var result = await _generateLocales(watch, output);
+    // 注册到yaml文件
+    if (result) result = await registerAssets('assets/locales/');
+    // 执行flutter pub get命令
+    if (result) await runFlutterPubGet();
+    logger.i('Process finished.');
   }
 
-  Future<bool> generateLocales(bool watch, String output, String name) async {
-    if (!YamlUtil.checkYamlFile()) return false;
-
-    var dir = Directory(join(PROJECT_PATH!, path));
+  // 生成locale.g.dart文件
+  Future<bool> _generateLocales(bool watch, String output) async {
+    final yamlFile = await getYmalFile();
+    if (yamlFile == null) return false;
+    // 判断资源目录是否存在
+    final dir = Directory(path.join(await PROJECT_PATH, _path));
     if (!dir.existsSync()) {
-      logger.e('The directory of "$path" does not exist under the project!');
+      logger.e('The directory of "$_path" does not exist under the project!');
       return false;
     }
-
-    var generateFile = File(join(PROJECT_PATH!, 'lib/$output/locales.g.dart'));
+    // 创建待生成文件
+    final generateFile = File(path.join(await PROJECT_PATH, 'lib/$output/locale.g.dart'));
     if (!generateFile.existsSync()) generateFile.createSync(recursive: true);
 
-    var localeFiles = dir.listSync();
-    localeFiles = localeFiles.where((element) => FileSystemEntity.isFileSync(element.path) && element.path.endsWith('.json')).toList();
-    localeFiles.sort((a, b) => a.path.compareTo(b.path));
-
-    // 生成文件内容
-    var locales = <String, Map<String, dynamic>>{};
-    localeFiles.forEach((fileEntity) {
-      var name = fileEntity.path.split('/').last.split('.')[0];
-      var map = json.decode(File(fileEntity.path).readAsStringSync());
-      locales[name] = map;
+    // 解析locales下的json文件
+    final localeFiles = dir
+        .listSync()
+        .where((element) => FileSystemEntity.isFileSync(element.path) && element.path.endsWith('.json'))
+        .toList();
+    final locales = <String, Map<String, dynamic>>{};
+    localeFiles.forEach((element) {
+      final name = path.basenameWithoutExtension(element.path);
+      locales[name] = json.decode(File(element.path).readAsStringSync());
     });
+    final localesMap = <String, Map<String, String>>{};
+    locales.forEach((key, value) => localesMap[key] = _parse(value));
+    final localeKeys = <String>{};
+    localesMap.forEach((key, value) => localeKeys.addAll(value.keys));
 
-    var sb = StringBuffer();
+    final sb = StringBuffer();
     sb.writeln(license);
-    sb.writeln('import \'package:flutter/widgets.dart\';\n');
-    // AppTranslation 部分
-    sb.writeln('abstract class AppTranslation {');
-    sb.writeln('\tstatic final Map<String, Map<String, String>> translations = {');
-    locales.keys.forEach((element) {
-      sb.writeln('\t\t\'$element\': Locales.$element,');
-    });
-    sb.writeln('\t};\n');
-    sb.writeln('\tstatic const List<Locale> supportedLocales = [');
-    locales.keys.forEach((element) {
-      var locale = element.toLowerCase().split('_');
-      var language = '\'${locale[0]}\'';
-      var country = locale.length == 2 ? ', \'${locale[1].toUpperCase()}\'' : '';
-      sb.writeln('\t\tLocale($language$country),');
-    });
-    sb.writeln('\t];\n}\n');
-    //
-    var localesMap = <String, Map<String, String>>{};
-    locales.forEach((key, value) => localesMap[key] = _parse(value, null));
-    var localeKeys = <String>[];
-    localesMap.forEach((key, value) {
-      if (!value.containsKey('locale')) {
-        logger.w('locale file "$key.json" is missing the key named "locale"');
-      }
-      var waitAddList = value.keys.where((element) => !localeKeys.contains(element)).toList();
-      localeKeys.addAll(waitAddList);
-    });
-
-    sb.writeln('abstract class $name {');
+    sb.writeln('import \'package:flutter/widgets.dart\';');
+    // 写类LocaleKeys
+    sb.writeln('class LocaleKeys {');
+    sb.writeln('LocaleKeys._();');
     localeKeys.forEach((element) {
-      sb.writeln('\tstatic const $element = \'$element\';');
-    });
-    sb.writeln('}\n');
-    //
-    sb.writeln('abstract class Locales {');
-    localesMap.forEach((key, value) {
-      sb.writeln('\tstatic const $key = <String, String>{');
-      value.forEach((k, v) {
-        sb.writeln('\t\t\'$k\': \'$v\',');
-      });
-      sb.writeln('\t};');
+      sb.writeln('static const $element = \'$element\';');
     });
     sb.writeln('}');
-    generateFile.writeAsStringSync(sb.toString(), flush: true);
+    // 写类Locales
+    sb.writeln('class Locales {');
+    sb.writeln('Locales._();');
+    // ①写translations
+    sb.writeln('static const Map<String, Map<String, String>> translations = {');
+    locales.keys.forEach((element) {
+      sb.writeln('\'$element\': $element,');
+    });
+    sb.writeln('};');
+    // ②写supportedLocales
+    sb.writeln('static const List<Locale> supportedLocales = [');
+    locales.keys.forEach((element) {
+      final locale = element.toLowerCase().split('_');
+      final language = '\'${locale[0]}\'';
+      final country = locale.length == 2 ? ', \'${locale[1].toUpperCase()}\'' : '';
+      sb.writeln('Locale($language$country),');
+    });
+    sb.writeln('];');
+
+    // ③写对照表
+    localesMap.forEach((key, value) {
+      sb.writeln('static const $key = <String, String>{');
+      value.forEach((k, v) {
+        sb.writeln('\'$k\': \'$v\',');
+      });
+      sb.writeln('};');
+    });
+    sb.writeln('}');
+    final statement = DartFormatter(pageWidth: 120).format(sb.toString());
+    generateFile.writeAsStringSync(statement, flush: true);
     return true;
   }
 
-  Map<String, String> _parse(Map<String, dynamic> data, String? parentKey) {
-    var map = <String, String>{};
+  Map<String, String> _parse(Map<String, dynamic> data, [String? parentKey]) {
+    final map = <String, String>{};
     data.forEach((key, value) {
-      var currentKey = parentKey != null ? '${parentKey}_$key' : key;
+      final currentKey = '${parentKey == null ? '' : '${parentKey}_'}$key';
       if (value is String) {
         map[currentKey] = value;
       } else if (value is Map<String, dynamic>) {

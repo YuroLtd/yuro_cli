@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "22.0.0"
+    version: "32.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.7.0"
+    version: "3.0.0"
   ansicolor:
     dependency: "direct main"
     description:
@@ -28,14 +28,14 @@ packages:
       name: args
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.1"
+    version: "2.3.0"
   async:
     dependency: transitive
     description:
       name: async
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.7.0"
+    version: "2.8.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -56,7 +56,7 @@ packages:
       name: cli_util
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.1"
+    version: "0.3.5"
   collection:
     dependency: transitive
     description:
@@ -77,7 +77,7 @@ packages:
       name: coverage
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.4"
   crypto:
     dependency: transitive
     description:
@@ -85,6 +85,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.0.1"
+  dart_style:
+    dependency: "direct main"
+    description:
+      name: dart_style
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.2.1"
   file:
     dependency: transitive
     description:
@@ -98,21 +105,21 @@ packages:
       name: frontend_server_client
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.2"
   glob:
     dependency: transitive
     description:
       name: glob
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.1"
+    version: "2.0.2"
   http:
     dependency: "direct main"
     description:
       name: http
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.13.3"
+    version: "0.13.4"
   http_multi_server:
     dependency: transitive
     description:
@@ -133,7 +140,7 @@ packages:
       name: io
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.3"
   js:
     dependency: transitive
     description:
@@ -141,34 +148,41 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.3"
+  lints:
+    dependency: "direct dev"
+    description:
+      name: lints
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.0.1"
   logging:
     dependency: transitive
     description:
       name: logging
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.2"
   matcher:
     dependency: transitive
     description:
       name: matcher
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.12.10"
+    version: "0.12.11"
   meta:
     dependency: transitive
     description:
       name: meta
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.4.0"
+    version: "1.7.0"
   mime:
     dependency: transitive
     description:
       name: mime
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   node_preamble:
     dependency: transitive
     description:
@@ -182,21 +196,14 @@ packages:
       name: package_config
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.2"
   path:
     dependency: "direct main"
     description:
       name: path
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.8.0"
-  pedantic:
-    dependency: "direct dev"
-    description:
-      name: pedantic
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.11.1"
+    version: "1.8.1"
   pool:
     dependency: transitive
     description:
@@ -210,21 +217,21 @@ packages:
       name: process_run
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.12.1+1"
+    version: "0.12.3+1"
   pub_semver:
     dependency: transitive
     description:
       name: pub_semver
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   shelf:
     dependency: transitive
     description:
       name: shelf
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.1.4"
+    version: "1.2.0"
   shelf_packages_handler:
     dependency: transitive
     description:
@@ -238,7 +245,7 @@ packages:
       name: shelf_static
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   shelf_web_socket:
     dependency: transitive
     description:
@@ -308,21 +315,21 @@ packages:
       name: test
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.17.9"
+    version: "1.20.1"
   test_api:
     dependency: transitive
     description:
       name: test_api
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.4.1"
+    version: "0.4.9"
   test_core:
     dependency: transitive
     description:
       name: test_core
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.3.29"
+    version: "0.4.11"
   typed_data:
     dependency: transitive
     description:
@@ -336,14 +343,14 @@ packages:
       name: vm_service
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "7.1.0"
+    version: "8.1.0"
   watcher:
     dependency: transitive
     description:
       name: watcher
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   web_socket_channel:
     dependency: transitive
     description:
@@ -366,4 +373,4 @@ packages:
     source: hosted
     version: "3.1.0"
 sdks:
-  dart: ">=2.12.0 <3.0.0"
+  dart: ">=2.14.0 <3.0.0"

@@ -13,7 +13,7 @@ class Version extends Command {
 
   @override
   Future<void> parser(List<String> arguments) async {
-    var version = await YamlUtil.getNativeVersion();
+    final version = await getNativeVersion();
     logger.i('\nYuro Cli ${version ?? 'unknown'}\n');
   }
 }
