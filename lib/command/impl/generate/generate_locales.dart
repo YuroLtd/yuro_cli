@@ -37,7 +37,7 @@ class GenerateLocales extends Command {
 
   // 生成locale.g.dart文件
   Future<bool> _generateLocales(bool watch, String output) async {
-    final yamlFile = await getYmalFile();
+    final yamlFile = await getYamlFile();
     if (yamlFile == null) return false;
     // 判断资源目录是否存在
     final dir = Directory(path.join(await PROJECT_PATH, _path));

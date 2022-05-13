@@ -4,7 +4,7 @@
 .idea/
 
 # Conventional directory for build outputs
-build/
+#build/
 
 # Directory created by dartdoc
 doc/api/

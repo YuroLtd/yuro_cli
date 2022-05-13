@@ -15,9 +15,38 @@ extension PackagePositionExt on PackagePosition {
   }
 }
 
+Future<dynamic> getAttributeValue(String attribute) async {
+  final yamlFile = await getYamlFile();
+  if (yamlFile == null) return null;
+  var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+  return yamlMap[attribute];
+}
+
+Future<bool> updateVersionCode() async {
+  var version = await getAttributeValue('version') as String?;
+  if (version == null) {
+    logger.e('Failed to get attribute: version');
+    return false;
+  }
+  final versionCode = await gitCommitCount();
+  if (version.contains('+')) {
+    version = version.substring(0, version.indexOf("+"));
+  }
+  version += '+$versionCode';
+
+  final yamlFile = await getYamlFile();
+  if (yamlFile == null) return false;
+  final yamlFileContent = yamlFile.readAsLinesSync();
+  final attribute = 'version: ';
+  final index = yamlFileContent.indexWhere((element) => element.startsWith(attribute));
+  yamlFileContent.replaceRange(index, index + 1, ['$attribute$version']);
+  await writeFile(yamlFile, yamlFileContent);
+  return true;
+}
+
 /// 注册资源目录到pubspec.yaml文件中
 Future<bool> registerAssets(String path) async {
-  final yamlFile = await getYmalFile();
+  final yamlFile = await getYamlFile();
   if (yamlFile == null) return false;
   var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
   if (!yamlMap.containsKey('flutter')) {
@@ -39,7 +68,7 @@ Future<bool> registerAssets(String path) async {
 
 /// 检查package是否注册到yaml中
 Future<bool> checkPackageRegister(String package, PackagePosition position) async {
-  final yamlFile = await getYmalFile();
+  final yamlFile = await getYamlFile();
   if (yamlFile == null) return false;
   var yamlFileContent = yamlFile.readAsLinesSync();
   var rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
@@ -59,7 +88,7 @@ Future<bool> checkPackageRegister(String package, PackagePosition position) asyn
       }
     }
     yamlFileContent.insert(++insertLine, '\r${position.str}:');
-    final writeResult = await _writeYamlFile(yamlFile, yamlFileContent);
+    final writeResult = await writeFile(yamlFile, yamlFileContent);
     if (writeResult) {
       yamlFileContent = yamlFile.readAsLinesSync();
       rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
@@ -73,7 +102,7 @@ Future<bool> checkPackageRegister(String package, PackagePosition position) asyn
     if (version != null) {
       var insertLine = _findDependencyLastLine(rootYamlMap, position.str, yamlFileContent);
       yamlFileContent.insert(++insertLine, '  $package: ^$version');
-      final writeResult = await _writeYamlFile(yamlFile, yamlFileContent);
+      final writeResult = await writeFile(yamlFile, yamlFileContent);
       // 写入成功，执行flutter pub get命令
       if (writeResult) await runFlutterPubGet();
       return writeResult;
@@ -102,9 +131,9 @@ int _findDependencyLastLine(YamlMap rootMap, String dependencyName, List<String>
   return -1;
 }
 
-Future<bool> _writeYamlFile(File yamlFile, List<String> content) async {
+Future<bool> writeFile(File file, List<String> content) async {
   try {
-    final iOSink = yamlFile.openWrite();
+    final iOSink = file.openWrite();
     content.forEach((element) => iOSink.writeln(element));
     await iOSink.close();
     return true;

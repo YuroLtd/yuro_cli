@@ -14,6 +14,7 @@ import 'package:process_run/cmd_run.dart';
 import 'util/logger.dart';
 
 part 'yaml.dart';
+part 'git.dart';
 
 /// 生成文件的固定头
 const String license = '''// DO NOT MODIFY MANUALLY. This code generate by package:yuro_cli/yuro_cli.dart.\n''';
@@ -36,7 +37,7 @@ FutureOr<String> get PROJECT_PATH async {
 }
 
 /// 获取项目pubspec.yaml文件
-Future<File?> getYmalFile() async {
+Future<File?> getYamlFile() async {
   try {
     return File(path.join(await PROJECT_PATH, 'pubspec.yaml'));
   } on Exception catch (err) {
@@ -60,6 +61,8 @@ Future<String?> getRemoteVersion(String package) async {
     var res = await get(Uri.parse('https://pub.dev/api/packages/$package'));
     if (res.statusCode == 200) {
       return json.decode(res.body)['latest']['version'];
+    } else {
+      return null;
     }
   } on Exception catch (_) {
     return null;
@@ -82,17 +85,7 @@ Future<String?> getNativeVersion() async {
   }
 }
 
-/// 执行CLI升级
-void runUpgrade() async {
-  final result = await runExecutableArguments('dart', ['pub', 'global', 'activate', 'yuro_cli'], verbose: true);
-  if (result.exitCode == 0) {
-    logger.i('\nyuro_cli has been updated to the latest version.');
-    logger.i('Process finished with exit code ${result.exitCode}\n');
-  } else {
-    logger.e('\nError: ${result.stderr}');
-    logger.e('Process finished with exit code ${result.exitCode}\n');
-  }
-}
+
 
 /// 执行"flutter pub get"命令
 Future<void> runFlutterPubGet() async {

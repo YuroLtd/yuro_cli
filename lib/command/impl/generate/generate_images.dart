@@ -36,7 +36,7 @@ class GenerateImages extends Command {
 
   // 生成images.g.dart文件
   Future<bool> _generateImages(bool isWatch, String output) async {
-    final yamlFile = await getYmalFile();
+    final yamlFile = await getYamlFile();
     if (yamlFile == null) return false;
     // 检查assets/images目录是否存在
     final dir = Directory(path.join(await PROJECT_PATH, _path));

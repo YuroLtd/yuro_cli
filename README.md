@@ -16,13 +16,5 @@ DART_PUB_HOME=C:\Users\administrator\AppData\Local\Pub\Cache
 ```
 <dart> pub global activate yuro_cli
 ```
-  
-3.use
-
-3.1.`yuro gen image`
-  
-3.2.`yuro gen locale`
-
-3.3.`yuro run build_runner`
 
 

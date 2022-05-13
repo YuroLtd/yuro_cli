@@ -1,3 +1,8 @@
+## 0.5.0
+
+* 增加命令`yuro gen version`.
+* 增加命令`yuro build apk`.
+
 ## 0.4.0
 
 * 优化`yuro gen`命令的生成内容.
