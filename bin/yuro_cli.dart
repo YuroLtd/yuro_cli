@@ -1,3 +1,3 @@
-import 'package:yuro_cli/yuro_cli.dart';
+import 'package:yuro_cli/yuro_cli.dart' as yuro_cli;
 
-void main(List<String> arguments) => YuroCli().parser(arguments);
+void main(List<String> arguments) => yuro_cli.parser(arguments);

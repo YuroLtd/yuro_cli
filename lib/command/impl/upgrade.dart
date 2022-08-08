@@ -24,7 +24,7 @@ class Upgrade extends Command {
       } else {
         logger.e('\nError: ${result.stderr}');
         logger.e('Process finished with exit code ${result.exitCode}\n');
-      };
+      }
     }
   }
 }

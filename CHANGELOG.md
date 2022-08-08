@@ -49,3 +49,5 @@
 ## 0.1.0
 
 * 支持生成`images`和`locales`.
+- Initial version.
+

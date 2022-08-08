@@ -93,8 +93,8 @@ class GenerateImages extends Command {
         final relativePath = path.relative(element.path, from: rootDir.path).replaceAll('\\', '/');
         map[fileNameWithoutExtension] = relativePath;
       } else {
-        final _map = _parse(rootDir, Directory(element.path));
-        map.addAll(_map);
+        final map = _parse(rootDir, Directory(element.path));
+        map.addAll(map);
       }
     }
     return map;
