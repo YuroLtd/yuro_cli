@@ -6,8 +6,8 @@ Future<void> parser(List<String> arguments) async {
   if (argResults.arguments.isEmpty || argResults['help']) {
     stdout.writeln(_argParser.usage);
   } else if (argResults['version']) {
-    final version = await getNativeVersion();
-    logger.i('\nYuro Cli ${version ?? 'unknown'}\n');
+    final version = await getCLIVersion();
+    logger.i('\nYuro Cli $version\n');
     return;
   } else {
     final result = _commands.where((element) => element.name == arguments.first).toList();

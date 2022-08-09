@@ -34,7 +34,7 @@ class BuildAndroid extends Command {
     // 开始构建编译命令
     final executableArguments = ['build', 'apk'];
     final flavor = argResults['flavor'];
-    if (flavor != null) executableArguments.add('--flavor=$flavor');
+    if (flavor != null) executableArguments.add('--flavor $flavor');
 
     final target = argResults['target=<path>'];
     if (target != null) executableArguments.addAll(['-t', target]);

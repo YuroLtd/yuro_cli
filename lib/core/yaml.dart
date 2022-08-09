@@ -1,117 +1,107 @@
 part of 'core.dart';
 
-enum PackagePosition { dependencies, devDependencies, dependencyOverrides }
+enum PackagePosition {
+  dependencies('dependencies'),
+  devDependencies('dev_dependencies'),
+  dependencyOverrides('dependency_overrides');
 
-extension PackagePositionExt on PackagePosition {
-  String get str {
-    switch (this) {
-      case PackagePosition.dependencies:
-        return 'dependencies';
-      case PackagePosition.dependencyOverrides:
-        return 'dependency_overrides';
-      case PackagePosition.devDependencies:
-        return 'dev_dependencies';
+  final String value;
+
+  const PackagePosition(this.value);
+}
+
+/// 获取CLI的本地版本
+Future<String> getCLIVersion() async {
+  final lockFile = getCLILockFile();
+  final yamlMap = loadYaml(lockFile.readAsStringSync()) as YamlMap;
+  return yamlMap['packages']['yuro_cli']['version'].toString();
+}
+
+/// 判断资源目录是否已经注册到pubspec.yaml文件中
+Future<bool> checkAssetsRegistered(String path) async {
+  final yamlFile = await getYamlFile();
+  var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+  if (yamlMap.containsKey('flutter')) {
+    final flutter = yamlMap['flutter'] as YamlMap?;
+    if (flutter != null) {
+      final assets = flutter['assets'] as YamlList?;
+      return assets?.contains(path) ?? false;
     }
   }
-}
-
-Future<dynamic> getAttributeValue(String attribute) async {
-  final yamlFile = await getYamlFile();
-  if (yamlFile == null) return null;
-  var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
-  return yamlMap[attribute];
-}
-
-Future<bool> updateVersionCode() async {
-  var version = await getAttributeValue('version') as String?;
-  if (version == null) {
-    logger.e('Failed to get attribute: version');
-    return false;
-  }
-  final versionCode = await gitCommitCount();
-  if (version.contains('+')) {
-    version = version.substring(0, version.indexOf("+"));
-  }
-  version += '+$versionCode';
-
-  final yamlFile = await getYamlFile();
-  if (yamlFile == null) return false;
-  final yamlFileContent = yamlFile.readAsLinesSync();
-  final attribute = 'version: ';
-  final index = yamlFileContent.indexWhere((element) => element.startsWith(attribute));
-  yamlFileContent.replaceRange(index, index + 1, ['$attribute$version']);
-  await writeFile(yamlFile, yamlFileContent);
-  return true;
+  return false;
 }
 
 /// 注册资源目录到pubspec.yaml文件中
-Future<bool> registerAssets(String path) async {
+Future<void> registerAssets(String path) async {
+  logger.i('\nregister $path...\n');
   final yamlFile = await getYamlFile();
-  if (yamlFile == null) return false;
   var yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
   if (!yamlMap.containsKey('flutter')) {
     yamlFile.writeAsStringSync('\n\rflutter:', mode: FileMode.append, flush: true);
     yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
   }
-  var flutter = yamlMap['flutter'] as YamlMap?;
-  if (flutter == null || !flutter.containsKey('assets')) {
+
+  if (!yamlMap.containsKey('assets')) {
     yamlFile.writeAsStringSync('\r  assets:', mode: FileMode.append, flush: true);
     yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
   }
-  final assets = flutter?['assets'] as YamlList?;
-  if (assets == null || !assets.contains(path)) {
+
+  if (!yamlMap.containsKey(path)) {
     yamlFile.writeAsStringSync('\r    - $path', mode: FileMode.append, flush: true);
-    return true;
+  }
+}
+
+/// 获取Yaml文件指定属性的值
+Future<dynamic> getAttributeValue(String attribute) async {
+  final yamlFile = await getYamlFile();
+  final yamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+  return yamlMap[attribute];
+}
+
+/// 检查package是否注册到yaml中
+Future<bool> checkPackageRegistered(String package, PackagePosition position) async {
+  final yamlFile = await getYamlFile();
+  var rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
+
+  if (rootYamlMap.containsKey(position.value)) {
+    // todo 验证光杆司令情况
+    final childYamlMap = rootYamlMap[position.value] as YamlMap;
+    return childYamlMap.containsKey(package);
   }
   return false;
 }
 
-/// 检查package是否注册到yaml中
-Future<bool> checkPackageRegister(String package, PackagePosition position) async {
+/// 在pubspec.yaml文件中的[position]注册最新版本的[package]
+Future<void> registerPackage(String package, PackagePosition position) async {
   final yamlFile = await getYamlFile();
-  if (yamlFile == null) return false;
   var yamlFileContent = yamlFile.readAsLinesSync();
   var rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
-  if (!rootYamlMap.containsKey(position.str)) {
-    logger.i('Register "${position.str}" in pubspec.yaml.\n');
+
+  if (!rootYamlMap.containsKey(position.value)) {
+    logger.i('\nRegister "${position.value}" in pubspec.yaml.\n');
 
     var insertLine = -1;
-    // 注册dev_dependencies到yaml文件中
-    if (position == PackagePosition.devDependencies) {
-      insertLine = _findDependencyLastLine(rootYamlMap, PackagePosition.dependencyOverrides.str, yamlFileContent);
+    if (position == PackagePosition.dependencyOverrides) {
+      insertLine = _findDependencyLastLine(rootYamlMap, PackagePosition.dependencies.value, yamlFileContent);
+    } else if (position == PackagePosition.devDependencies) {
+      insertLine = _findDependencyLastLine(rootYamlMap, PackagePosition.dependencyOverrides.value, yamlFileContent);
       if (insertLine == -1) {
-        insertLine = _findDependencyLastLine(rootYamlMap, PackagePosition.dependencies.str, yamlFileContent);
-      }
-      if (insertLine == -1) {
-        logger.e('Cannot find "dependency" or "dependency_overrides" in the pubspec.yaml file');
-        return false;
+        insertLine = _findDependencyLastLine(rootYamlMap, PackagePosition.dependencies.value, yamlFileContent);
       }
     }
-    yamlFileContent.insert(++insertLine, '\r${position.str}:');
-    final writeResult = await writeFile(yamlFile, yamlFileContent);
-    if (writeResult) {
-      yamlFileContent = yamlFile.readAsLinesSync();
-      rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
-    }
+    insertLine == -1
+        ? yamlFileContent.add('\r${position.value}:')
+        : yamlFileContent.insert(++insertLine, '\r${position.value}:');
+    await writeFile(yamlFile, yamlFileContent);
+    // 重新加载
+    yamlFileContent = yamlFile.readAsLinesSync();
+    rootYamlMap = loadYaml(yamlFile.readAsStringSync()) as YamlMap;
   }
-
-  final childYamlMap = rootYamlMap[position.str] as YamlMap?;
-  if (childYamlMap == null || !childYamlMap.containsKey(package)) {
-    logger.i('Register "$package" in pubspec.yaml.\n');
-    final version = await getRemoteVersion(package);
-    if (version != null) {
-      var insertLine = _findDependencyLastLine(rootYamlMap, position.str, yamlFileContent);
-      yamlFileContent.insert(++insertLine, '  $package: ^$version');
-      final writeResult = await writeFile(yamlFile, yamlFileContent);
-      // 写入成功，执行flutter pub get命令
-      if (writeResult) await runFlutterPubGet();
-      return writeResult;
-    } else {
-      logger.e('Failed to get the latest version of "$package", please try again.');
-      return false;
-    }
-  }
-  return true;
+  logger.i('Register "$package" in pubspec.yaml.\n');
+  final version = await getRemoteVersion(package);
+  var insertLine = _findDependencyLastLine(rootYamlMap, position.value, yamlFileContent);
+  yamlFileContent.insert(++insertLine, '  $package: ^$version');
+  await writeFile(yamlFile, yamlFileContent);
 }
 
 /// 查找dependency的上一行的位置
@@ -131,14 +121,9 @@ int _findDependencyLastLine(YamlMap rootMap, String dependencyName, List<String>
   return -1;
 }
 
-Future<bool> writeFile(File file, List<String> content) async {
-  try {
-    final iOSink = file.openWrite();
-    content.forEach((element) => iOSink.writeln(element));
-    await iOSink.close();
-    return true;
-  } on Exception catch (_) {
-    logger.e('"pubspec.yaml" write failed, please try again.');
-    return false;
-  }
+Future<void> writeFile(File file, List<String> content) async {
+  final iOSink = file.openWrite();
+  content.forEach((element) => iOSink.writeln(element));
+  await iOSink.flush();
+  await iOSink.close();
 }

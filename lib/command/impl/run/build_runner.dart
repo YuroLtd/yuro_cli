@@ -15,17 +15,11 @@ class BuildRunner extends Command {
   @override
   Future<void> parser(List<String> arguments) async {
     final argResults = argParser.parse(arguments);
-    bool delete = argResults['delete'];
-    final checkResult = await checkPackageRegister(name, PackagePosition.devDependencies);
-    if (checkResult) {
-      // 执行"flutter packages pub run build_runner build"命令,当[delete]为true时,增加参数"--delete-conflicting-outputs"
-      final arguments = ['pub', 'run', 'build_runner', 'build'];
-      if (delete) arguments.add('--delete-conflicting-outputs');
-      final res = await runExecutableArguments('flutter', arguments, verbose: true);
-      if (res.exitCode != 0) {
-        logger.e('\nError: ${res.stderr}');
-      }
+    final checkResult = await checkPackageRegistered(name, PackagePosition.dependencyOverrides);
+    if (!checkResult) {
+      await registerPackage(name, PackagePosition.dependencyOverrides);
+      await runPubGet();
     }
-    logger.i('Process finished.\n');
+    await runBuildRunner(argResults['delete']);
   }
 }
