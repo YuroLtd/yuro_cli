@@ -116,7 +116,7 @@ synthetic-package: false
 
   String get _tempArbContent => '''
 {
-  "@@locale": 'zh'
+  "@@locale": "zh"
 }
   ''';
 }
