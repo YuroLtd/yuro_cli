@@ -7,7 +7,7 @@ import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
 class GenerateImage extends Command {
-  final _path = 'assets${path.separator}images';
+  final _path = 'assets/images';
   final _extensions = ['.png', '.jpg', '.svg'];
   late final Directory rootDir;
   late final String outputDir;

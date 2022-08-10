@@ -15,9 +15,9 @@ class BuildRunner extends Command {
   @override
   Future<void> parser(List<String> arguments) async {
     final argResults = argParser.parse(arguments);
-    final checkResult = await checkPackageRegistered(name, PackagePosition.dependencyOverrides);
+    final checkResult = await checkPackageRegistered(PackagePosition.dependencyOverrides, 'build_runner');
     if (!checkResult) {
-      await registerPackage(name, PackagePosition.dependencyOverrides);
+      await registerPackage( PackagePosition.dependencyOverrides,'build_runner');
       await runPubGet();
     }
     await runBuildRunner(argResults['delete']);
