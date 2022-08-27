@@ -24,7 +24,7 @@ class GenerateImage extends Command {
 
   @override
   ArgParser get argParser => ArgParser()
-    ..addFlag('watch', abbr: 'w', help: 'Whether to listen the changes in assets.', defaultsTo: true)
+    ..addFlag('watch', abbr: 'w', help: 'Whether to listen the changes in assets.', defaultsTo: false)
     ..addOption('output', abbr: 'o', help: 'Default output directory.', defaultsTo: 'generated');
 
   @override
