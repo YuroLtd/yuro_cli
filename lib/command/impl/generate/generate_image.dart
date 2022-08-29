@@ -7,7 +7,7 @@ import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
 class GenerateImage extends Command {
-  final _path = 'assets/images';
+  final _path = 'assets${path.separator}images';
   final _extensions = ['.png', '.jpg', '.svg'];
   late final Directory rootDir;
   late final String outputDir;
@@ -63,9 +63,9 @@ class GenerateImage extends Command {
 
   // 生成assets_images.g.dart文件
   Future<void> _generateAssetsImageFile() async {
-    logger.i('analyzing image...\n');
+    logger.i('analyzing image...');
     _parse(rootDir);
-    logger.i('generate file...\n');
+    logger.i('generate file...');
     // 创建待生成文件
     final generateFile = File(path.join(await PROJECT_PATH, 'lib/$outputDir/assets_images.g.dart'));
     if (!generateFile.existsSync()) generateFile.createSync(recursive: true);
@@ -120,7 +120,7 @@ class GenerateImage extends Command {
     fileName = fileName.replaceAllMapped(RegExp(r'[A-Z]'), (match) => '_${match[0]!.toLowerCase()}');
 
     final relativePath = path.relative(file.path, from: rootDir.path).replaceAll('\\', '/');
-    print('${file.path}, $fileName --- $relativePath');
+    print('${file.path}');
     return MapEntry(fileName, relativePath);
   }
 }
