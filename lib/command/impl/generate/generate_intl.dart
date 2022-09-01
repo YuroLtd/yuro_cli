@@ -77,7 +77,7 @@ arb-dir: lib/intl/l10n
 template-arb-file: intl_zh.arb
 
 # 指定本地化文件输出路径, 如果要配置此项需将[synthetic-package] 设置为false
-output-dir: lib/intl
+#output-dir: lib/intl
 
 # 输出文件名称
 output-localization-file: app_localizations.dart
@@ -102,10 +102,11 @@ preferred-supported-locales:
 # 如果为true, 会返回null
 #nullable-getter: false
 
-# 指定是否时合成包
+# 指定是否是合成包 
 # 当值为true,则生成文件在.dart_tool/flutter_gen/gen_l10n
 # 当值为false, 这生成的文件在[arb-dir]目录下
-synthetic-package: false
+# 注: 不建议修改该字段为true, 会导致build_runner插件无法生成代码
+synthetic-package: true
 
 # 附加到生成的 Dart 本地化文件的头部, String类型
 #header: ''
