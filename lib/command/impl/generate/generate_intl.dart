@@ -71,7 +71,7 @@ class GenerateIntl extends Command {
 # https://docs.google.com/document/d/10e0saTfAv32OZLRmONy866vnaw0I2jwL8zukykpgWBc/edit#
 
 # arb文件目录
-arb-dir: lib/intl/l10n
+arb-dir: lib/l10n
 
 # 模板文件
 template-arb-file: intl_zh.arb
