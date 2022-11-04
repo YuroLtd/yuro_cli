@@ -1,6 +1,4 @@
 import 'package:path/path.dart' as path;
-import 'package:dart_style/dart_style.dart';
-
 import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
@@ -42,19 +40,19 @@ class GenerateVersion extends Command {
     }
 
     final branch = await gitBranch();
-    _addOrReplace(contents, 'const gitBranch', branch);
+    _addOrReplace(contents, 'const buildBranch', branch);
 
     final short = await gitShort();
-    _addOrReplace(contents, 'const gitShort', short);
+    _addOrReplace(contents, 'const buildNumber', short);
 
     final date = await gitDate();
-    _addOrReplace(contents, 'const gitDate', date);
+    _addOrReplace(contents, 'const buildDate', date);
 
-    final version = await _getVersion();
-    _addOrReplace(contents, 'const versionName', version);
+    final versionName = await _getVersionName();
+    _addOrReplace(contents, 'const versionName', versionName);
 
-    final buildNumber = await _getBuildNumber();
-    _addOrReplace(contents, 'const buildNumber', buildNumber);
+    final versionCode = await _getVersionCode();
+    _addOrReplace(contents, 'const versionCode', versionCode);
 
     await writeFile(generateFile, contents);
   }
@@ -79,7 +77,7 @@ class GenerateVersion extends Command {
     await writeFile(yamlFile, yamlFileContent);
   }
 
-  Future<String> _getVersion() async {
+  Future<String> _getVersionName() async {
     final version = await getAttributeValue('version') as String?;
     if (version == null) {
       throw 'Failed to get attribute: version';
@@ -88,7 +86,7 @@ class GenerateVersion extends Command {
     return list[0];
   }
 
-  Future<String> _getBuildNumber() async {
+  Future<String> _getVersionCode() async {
     final version = await getAttributeValue('version') as String?;
     if (version == null) {
       throw 'Failed to get attribute: version';
