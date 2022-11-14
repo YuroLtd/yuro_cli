@@ -120,7 +120,7 @@ class GenerateImage extends Command {
     fileName = fileName.replaceAllMapped(RegExp(r'[A-Z]'), (match) => '_${match[0]!.toLowerCase()}');
 
     final relativePath = path.relative(file.path, from: rootDir.path).replaceAll('\\', '/');
-    print('${file.path}');
+    print(file.path);
     return MapEntry(fileName, relativePath);
   }
 }

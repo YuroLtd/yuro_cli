@@ -2,8 +2,8 @@ import 'package:yuro_cli/command/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
 import 'build_android.dart';
-import 'build_ios.dart';
-import 'build_windows.dart';
+// import 'build_ios.dart';
+// import 'build_windows.dart';
 
 class Build extends Command {
   @override
