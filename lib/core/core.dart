@@ -4,11 +4,13 @@ import 'dart:io';
 
 export 'package:args/args.dart';
 export 'package:process_run/process_run.dart';
+export 'package:yaml_edit/yaml_edit.dart';
 export 'dart:io';
 
 import 'package:ansicolor/ansicolor.dart';
 import 'package:http/http.dart';
 import 'package:yaml/yaml.dart';
+import 'package:yaml_edit/yaml_edit.dart';
 import 'package:path/path.dart' as path;
 import 'package:process_run/cmd_run.dart';
 
@@ -40,9 +42,6 @@ Future<String> get PROJECT_PATH async {
 
 String get HOST_URL => Platform.environment['PUB_HOSTED_URL'] ?? 'https://pub.dev/';
 
-/// 获取项目pubspec.yaml文件
-Future<File> getYamlFile() async => File(path.join(await PROJECT_PATH, 'pubspec.yaml'));
-
 /// dart的.pub-cache地址
 String get DART_PUB_HOME {
   final path = Platform.environment['DART_PUB_HOME'];
@@ -60,6 +59,9 @@ File getCLILockFile() {
   }
   return lockFile;
 }
+
+/// 获取指定的yaml文件
+Future<File> getYamlFile([String name = 'pubspec.yaml']) async => File(path.join(await PROJECT_PATH, 'pubspec.yaml'));
 
 class _Logger {
   final AnsiPen _penWaring = AnsiPen()..yellow();

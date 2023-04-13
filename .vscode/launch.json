@@ -1,0 +1,40 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gen assets",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "gen",
+                "assets",
+                "-i",
+                "icons"
+            ],
+            "program": "bin/yuro_cli.dart"
+        },
+        {
+            "name": "run build_runner",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "run",
+                "build_runner",
+            ],
+            "program": "bin/yuro_cli.dart"
+        },
+        {
+            "name": "gen version",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "gen",
+                "version",
+            ],
+            "program": "bin/yuro_cli.dart"
+        }
+    ]
+}

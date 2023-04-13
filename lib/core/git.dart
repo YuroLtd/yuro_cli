@@ -1,10 +1,10 @@
 part of 'core.dart';
 
 /// 获取git提交次数
-Future<int?> gitCommitCount() async {
+Future<String> gitCommitCount() async {
   final gitCount = await runExecutableArguments('git', ['rev-list', '--count', 'HEAD']);
   if (gitCount.exitCode != 0) logger.w(gitCount.stderr);
-  return int.tryParse(gitCount.stdout);
+  return gitCount.stdout.toString().replaceAll('\n', '');
 }
 
 /// 利用git生成类似于"branch_short_yyMMddHHmm"的构建信息
