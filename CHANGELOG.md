@@ -1,3 +1,8 @@
+## 0.7.0
+
+* 优化流程, 重构代码
+* 替换命令`yuro gen image`为`yuro gen assets`.
+
 ## 0.5.0
 
 * 增加命令`yuro gen version`.

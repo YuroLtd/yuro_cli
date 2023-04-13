@@ -1,8 +1,7 @@
-import 'package:yuro_cli/command/command.dart';
+import 'package:yuro_cli/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
-class BuildWindows extends Command{
-
+class BuildWindows extends Command {
   @override
   String get name => 'windows';
 
@@ -10,13 +9,9 @@ class BuildWindows extends Command{
   String get help => 'execute cmd "flutter build windows"';
 
   @override
-  ArgParser get argParser => ArgParser();
-
-
-
+  void buildArgParser(ArgParser argParser) {}
+  
   @override
-  Future<void> parser(List<String> arguments) async{
-
+  void coustomParser(ArgResults argResults) {
   }
-
 }

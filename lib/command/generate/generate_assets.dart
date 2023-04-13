@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:path/path.dart' as path;
 import 'package:dart_style/dart_style.dart';
 
-import 'package:yuro_cli/command/command.dart';
+import 'package:yuro_cli/command.dart';
 import 'package:yuro_cli/core/core.dart';
 
 class GenerateImage extends Command {
@@ -16,19 +16,14 @@ class GenerateImage extends Command {
   late final String projectPath;
 
   @override
-  ArgParser get argParser => ArgParser()
-    ..addOption('path', abbr: 'p', help: 'Path of assets.')
-    ..addOption('output', abbr: 'o', help: 'Default output directory is "lib/generated.', defaultsTo: 'generated')
-    ..addOption('ignore', abbr: 'i', help: 'Ignored folders, separated by ",".')
-    ..addFlag('help', abbr: 'h', help: 'Print this usage information.', defaultsTo: false);
+  void buildArgParser(ArgParser argParser) {
+    argParser.addOption('path', abbr: 'p', help: 'Path of assets.');
+    argParser.addOption('output', abbr: 'o', help: 'Default output directory is "lib/generated.', defaultsTo: 'generated');
+    argParser.addOption('ignore', abbr: 'i', help: 'Ignored folders, separated by ",".');
+  }
 
   @override
-  Future<void> parser(List<String> arguments) async {
-    final argResults = argParser.parse(arguments);
-    if (argResults['help']) {
-      stdout.writeln(argParser.usage);
-      return;
-    }
+  void coustomParser(ArgResults argResults) async {
 
     final assetsPath = argResults['path'];
     final outputDir = argResults['output'];
@@ -61,7 +56,6 @@ class GenerateImage extends Command {
 
     // 检查资源是否注册到pubspec.yaml文件
     await registerAssets(list);
-  
 
     logger.i('\rProcess finished with exit code 0');
   }
@@ -109,8 +103,10 @@ class GenerateImage extends Command {
       list.add('$relativePath/');
       dirName = dirName
           .split('_')
-          .map((e) =>
-              e.replaceAllMapped(RegExp(r'^[a-z]+$'), (match) => '${match.input.substring(0, 1).toUpperCase()}${match.input.substring(1)}'))
+          .map((e) => e.replaceAllMapped(
+                RegExp(r'^[a-z]+$'),
+                (match) => '${match.input.substring(0, 1).toUpperCase()}${match.input.substring(1)}',
+              ))
           .join();
       sb.writeln('abstract class Asset$dirName{');
       element.value.forEach((key, value) {

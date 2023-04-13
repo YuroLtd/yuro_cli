@@ -1,4 +1,4 @@
-part of 'core.dart';
+part of '../core.dart';
 
 /// 获取CLI的本地版本
 Future<String> getCLIVersion() async {

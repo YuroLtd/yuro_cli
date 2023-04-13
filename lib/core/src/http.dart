@@ -1,4 +1,4 @@
-part of 'core.dart';
+part of '../core.dart';
 
 /// 获取[package]的最新版本
 Future<String> getRemoteVersion(String package) async {

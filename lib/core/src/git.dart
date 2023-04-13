@@ -1,4 +1,4 @@
-part of 'core.dart';
+part of '../core.dart';
 
 /// 获取git提交次数
 Future<String> gitCommitCount() async {

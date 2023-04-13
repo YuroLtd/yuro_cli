@@ -3,24 +3,26 @@ import 'dart:convert';
 import 'dart:io';
 
 export 'package:args/args.dart';
-export 'package:process_run/process_run.dart';
+export 'package:yaml/yaml.dart';
 export 'package:yaml_edit/yaml_edit.dart';
+export 'package:process_run/process_run.dart';
+export 'package:meta/meta.dart';
+export 'package:path/path.dart';
+export 'package:collection/collection.dart';
 export 'dart:io';
 
 import 'package:ansicolor/ansicolor.dart';
 import 'package:http/http.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_edit/yaml_edit.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 
-part 'yaml.dart';
 
-part 'http.dart';
-
-part 'git.dart';
-
-part 'command.dart';
+part 'src/yaml.dart';
+part 'src/http.dart';
+part 'src/git.dart';
+part 'src/command.dart';
 
 /// 生成文件的固定头
 const String license = '// DO NOT MODIFY MANUALLY. This code generate by package:yuro_cli/yuro_cli.dart.';
@@ -34,7 +36,7 @@ Future<String> get PROJECT_PATH async {
   } else {
     directory = Platform.environment['PWD'];
   }
-  if (directory == null || !File(path.join(directory, 'pubspec.yaml')).existsSync()) {
+  if (directory == null || !File(join(directory, 'pubspec.yaml')).existsSync()) {
     throw FileSystemException('not the root path of the flutter or dart project', directory);
   }
   return directory;
@@ -53,7 +55,7 @@ String get DART_PUB_HOME {
 
 /// 获取项目cli的lock文件
 File getCLILockFile() {
-  File lockFile = File(path.join(DART_PUB_HOME, 'global_packages/yuro_cli/pubspec.lock'));
+  File lockFile = File(join(DART_PUB_HOME, 'global_packages/yuro_cli/pubspec.lock'));
   if (!lockFile.existsSync()) {
     throw Exception('Yuo can use command "<dart> pub global activate yuro_cli" to get this cli.');
   }
@@ -61,7 +63,7 @@ File getCLILockFile() {
 }
 
 /// 获取指定的yaml文件
-Future<File> getYamlFile([String name = 'pubspec.yaml']) async => File(path.join(await PROJECT_PATH, 'pubspec.yaml'));
+Future<File> getYamlFile([String name = 'pubspec.yaml']) async => File(join(await PROJECT_PATH, 'pubspec.yaml'));
 
 class _Logger {
   final AnsiPen _penWaring = AnsiPen()..yellow();

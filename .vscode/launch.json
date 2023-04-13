@@ -5,36 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gen assets",
+            "name": "yuro",
             "request": "launch",
             "type": "dart",
             "args": [
-                "gen",
-                "assets",
-                "-i",
-                "icons"
+                
             ],
             "program": "bin/yuro_cli.dart"
         },
-        {
-            "name": "run build_runner",
-            "request": "launch",
-            "type": "dart",
-            "args": [
-                "run",
-                "build_runner",
-            ],
-            "program": "bin/yuro_cli.dart"
-        },
-        {
-            "name": "gen version",
-            "request": "launch",
-            "type": "dart",
-            "args": [
-                "gen",
-                "version",
-            ],
-            "program": "bin/yuro_cli.dart"
-        }
     ]
 }

@@ -1,4 +1,4 @@
-part of 'core.dart';
+part of '../core.dart';
 
 /// 执行"flutter pub get"命令
 Future<bool> runPubGet() async {

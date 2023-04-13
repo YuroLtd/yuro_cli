@@ -1,6 +1,6 @@
 name: yuro_cli
 description: A sample command-line for yuro.
-version: 0.6.0
+version: 0.7.0
 homepage: https://github.com/YuroLtd/yuro_cli
 
 environment:
@@ -15,6 +15,7 @@ dependencies:
   process_run: ^0.12.5+3
   dart_style: ^2.3.0
   ansicolor: ^2.0.1
+  meta: ^1.9.1
 
 dev_dependencies: 
   lints: ^2.0.0

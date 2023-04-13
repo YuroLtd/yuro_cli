@@ -1,4 +1,5 @@
-import 'package:yuro_cli/command/command.dart';
+import 'package:yuro_cli/command.dart';
+import 'package:yuro_cli/core/core.dart';
 
 import 'build_runner.dart';
 
@@ -11,4 +12,12 @@ class Run extends Command {
 
   @override
   List<Command> get commands => [BuildRunner()];
+
+  @override
+  void buildArgParser(ArgParser argParser) {
+  }
+  
+  @override
+  void coustomParser(ArgResults argResults) {
+  }
 }
