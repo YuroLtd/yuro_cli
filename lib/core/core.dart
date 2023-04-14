@@ -8,7 +8,6 @@ export 'package:yaml_edit/yaml_edit.dart';
 export 'package:process_run/process_run.dart';
 export 'package:meta/meta.dart';
 export 'package:path/path.dart';
-export 'package:collection/collection.dart';
 export 'dart:io';
 
 import 'package:ansicolor/ansicolor.dart';
