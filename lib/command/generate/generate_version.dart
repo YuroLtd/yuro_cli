@@ -17,10 +17,6 @@ class GenerateVersion extends Command {
     final generateFile = File(join(await PROJECT_PATH, 'lib/generated/build.g.dart'));
     if (!generateFile.existsSync()) generateFile.createSync(recursive: true);
     final contents = generateFile.readAsLinesSync();
-    contents.forEach((element) {
-      print('"$element"');
-    });
-    print('/////////');
     // 判断是否要插入license
     if (!contents.contains(license)) {
       contents.insertAll(0, [license, '']);
@@ -42,9 +38,9 @@ class GenerateVersion extends Command {
 
     await generateFile.writeAsString(contents.join('\n'), flush: true);
 
-    // editor.update(['version'], YamlScalar.wrap('$versionName${version.contains('+') ? '+$versionCode' : ''}'));
-    // await yamlFile.writeAsString(editor.toString());
-    // await runPubGet();
+    editor.update(['version'], YamlScalar.wrap('$versionName${version.contains('+') ? '+$versionCode' : ''}'));
+    await yamlFile.writeAsString(editor.toString());
+    await runPubGet();
 
     logger.i('\rProcess finished with exit code 0');
   }
