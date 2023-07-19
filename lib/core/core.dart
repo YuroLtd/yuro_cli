@@ -44,17 +44,17 @@ Future<String> get PROJECT_PATH async {
 String get HOST_URL => Platform.environment['PUB_HOSTED_URL'] ?? 'https://pub.dev/';
 
 /// dart的.pub-cache地址
-String get DART_PUB_HOME {
-  final path = Platform.environment['DART_PUB_HOME'];
+String get PUB_CACHE {
+  final path = Platform.environment['PUB_CACHE'];
   if (path == null) {
-    throw Exception('Unable to find DART_PUB_HOME in environment variables, you must configure it first.');
+    throw Exception('Unable to find PUB_CACHE in environment variables, you must configure it first.');
   }
   return path;
 }
 
 /// 获取项目cli的lock文件
 File getCLILockFile() {
-  File lockFile = File(join(DART_PUB_HOME, 'global_packages/yuro_cli/pubspec.lock'));
+  File lockFile = File(join(PUB_CACHE, 'global_packages/yuro_cli/pubspec.lock'));
   if (!lockFile.existsSync()) {
     throw Exception('Yuo can use command "<dart> pub global activate yuro_cli" to get this cli.');
   }
